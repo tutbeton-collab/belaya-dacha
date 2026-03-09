@@ -1,0 +1,23 @@
+# Зависимости
+node_modules/
+.npm
+
+# Next.js
+.next/
+out/
+*.log
+
+# ОС
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Окружение
+.env
+.env.local
+.env.production
