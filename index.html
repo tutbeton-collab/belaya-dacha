@@ -424,7 +424,7 @@
     <header>
         <div class="container">
             <nav>
-                <a href="/" class="logo" id="logo-link">🌿 Белая Дача</a>
+                <a href="/belaya-dacha/" class="logo" id="logo-link">🌿 Белая Дача</a>
                 <ul class="nav-links">
                     <li><a href="#about">О ферме</a></li>
                     <li><a href="#products">Овощи</a></li>
@@ -658,18 +658,14 @@
 
     <!-- JavaScript для плавного скролла -->
     <script>
-        // Плавный скролл для логотипа
+        // Плавный скролл для логотипа (переход на главную)
         document.addEventListener('DOMContentLoaded', function() {
             const logoLink = document.getElementById('logo-link');
-            
+
             if (logoLink) {
                 logoLink.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    // Плавный скролл к началу страницы
-                    window.scrollTo({
-                        top: 0,
-                        behavior: 'smooth'
-                    });
+                    // Разрешаем стандартный переход на главную страницу
+                    // Плавный скролл произойдёт автоматически после загрузки
                 });
             }
 
@@ -677,15 +673,12 @@
             document.querySelectorAll('a[href^="#"]').forEach(anchor => {
                 anchor.addEventListener('click', function(e) {
                     const targetId = this.getAttribute('href');
-                    
-                    // Пропускаем ссылку логотипа (она уже обработана)
-                    if (this === logoLink) return;
-                    
+
                     // Если ссылка только на # (как у логотипа с href="/")
                     if (targetId === '#') return;
-                    
+
                     const targetElement = document.querySelector(targetId);
-                    
+
                     if (targetElement) {
                         e.preventDefault();
                         const headerOffset = 80; // Высота header
