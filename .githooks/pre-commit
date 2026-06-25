@@ -1,0 +1,64 @@
+#!/bin/bash
+# Reopen Protocol Hook
+# Installed via: git config core.hooksPath .githooks
+# Or: chmod +x .git/hooks/pre-commit && cp this .git/hooks/pre-commit
+
+set -e
+
+ROOT=$(git rev-parse --show-toplevel 2>/dev/null || echo ".")
+LOCK_FILE="$ROOT/LOCK.md"
+
+# Only check if LOCK.md exists
+if [ ! -f "$LOCK_FILE" ]; then
+    exit 0
+fi
+
+# Extract PROJECT_STATE
+STATE=$(grep -oP 'PROJECT_STATE:\s*\K\w+' "$LOCK_FILE" 2>/dev/null || echo "")
+
+case "$STATE" in
+    "FINALIZED"|"ARCHIVED")
+        # Check if this is a valid TASK_REOPENED transition
+        # Allow only if the commit message contains "TASK_REOPENED"
+        COMMIT_MSG_FILE="$1"
+        if [ -f "$COMMIT_MSG_FILE" ]; then
+            MSG=$(cat "$COMMIT_MSG_FILE")
+            if echo "$MSG" | grep -qi "TASK_REOPENED"; then
+                # Valid reopening - allow commit
+                echo "[REOPEN] TASK_REOPENED detected - allowing commit"
+                exit 0
+            fi
+        fi
+        
+        # Check if only LOCK.md itself is being modified (state transition)
+        STAGED_FILES=$(git diff --cached --name-only 2>/dev/null || echo "")
+        NON_LOCK_FILES=$(echo "$STAGED_FILES" | grep -v "LOCK.md" || true)
+        
+        if [ -z "$NON_LOCK_FILES" ]; then
+            # Only LOCK.md changed - check if it's a valid state transition
+            OLD_STATE=$(git show HEAD:LOCK.md 2>/dev/null | grep -oP 'PROJECT_STATE:\s*\K\w+' || echo "")
+            NEW_STATE=$(cat "$LOCK_FILE" | grep -oP 'PROJECT_STATE:\s*\K\w+' || echo "")
+            
+            if [ "$OLD_STATE" = "FINALIZED" ] && [ "$NEW_STATE" = "REOPENED" ]; then
+                echo "[REOPEN] Valid state transition: FINALIZED → REOPENED"
+                exit 0
+            fi
+            
+            echo "[BLOCKED] Cannot modify LOCK.md without TASK_REOPENED"
+            exit 1
+        fi
+        
+        echo "[BLOCKED] Project is in state: $STATE"
+        echo "[BLOCKED] Required: TASK_REOPENED to unlock"
+        echo "[BLOCKED] Attempted changes: $NON_LOCK_FILES"
+        exit 1
+        ;;
+    "REOPENED"|"IN_PROGRESS"|"VERIFYING"|"NEW")
+        # Normal operation allowed
+        exit 0
+        ;;
+    *)
+        echo "[WARN] Unknown PROJECT_STATE: $STATE"
+        exit 0
+        ;;
+esac
