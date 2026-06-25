@@ -43,10 +43,20 @@ class DrawWinnerUseCase(
         if (count == 0) {
             return Result.failure(NoParticipantsException("Нет участников для розыгрыша"))
         }
+        val historyCount = drawRepository.getHistoryCount()
+        if (historyCount > 0) {
+            return Result.failure(
+                DrawAlreadyCompletedException(
+                    "Розыгрыш уже проведён. Очистите историю для нового розыгрыша."
+                )
+            )
+        }
         val result = drawRepository.drawWinner()
         return Result.success(result)
     }
 }
+
+class DrawAlreadyCompletedException(message: String) : Exception(message)
 
 class GetHistoryUseCase(
     private val drawRepository: DrawRepository
@@ -64,6 +74,12 @@ class GetHistoryCountUseCase(
     private val drawRepository: DrawRepository
 ) {
     suspend operator fun invoke() = drawRepository.getHistoryCount()
+}
+
+class ClearHistoryUseCase(
+    private val drawRepository: DrawRepository
+) {
+    suspend operator fun invoke() = drawRepository.clearHistory()
 }
 
 class ValidationException(message: String) : Exception(message)

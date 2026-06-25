@@ -45,7 +45,8 @@ fun MainScreen(
     onAddParticipant: () -> Unit,
     onShowParticipants: () -> Unit,
     onDraw: () -> Unit,
-    onShowHistory: () -> Unit
+    onShowHistory: () -> Unit,
+    onClearHistory: () -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -189,6 +190,16 @@ fun MainScreen(
                 Icon(Icons.Default.History, contentDescription = null, modifier = Modifier.size(20.dp))
                 Spacer(modifier = Modifier.width(4.dp))
                 Text("История розыгрышей")
+            }
+
+            // Очистка истории
+            if (uiState.history.isNotEmpty()) {
+                FilledTonalButton(
+                    onClick = onClearHistory,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("Очистить историю")
+                }
             }
 
             // Ошибка

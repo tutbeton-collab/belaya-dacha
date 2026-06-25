@@ -15,4 +15,5 @@ interface DrawRepository {
     fun getHistory(): Flow<List<DrawResult>>
     suspend fun drawWinner(): DrawResult
     suspend fun getHistoryCount(): Int
+    suspend fun clearHistory()
 }

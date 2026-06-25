@@ -13,6 +13,7 @@ import com.belayadacha.domain.usecase.GetHistoryCountUseCase
 import com.belayadacha.domain.usecase.GetHistoryUseCase
 import com.belayadacha.domain.usecase.GetParticipantCountUseCase
 import com.belayadacha.domain.usecase.GetParticipantsUseCase
+import com.belayadacha.domain.usecase.ClearHistoryUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -26,7 +27,8 @@ class DrawViewModel(
     private val drawWinnerUseCase: DrawWinnerUseCase,
     private val getHistoryUseCase: GetHistoryUseCase,
     private val getParticipantCountUseCase: GetParticipantCountUseCase,
-    private val getHistoryCountUseCase: GetHistoryCountUseCase
+    private val getHistoryCountUseCase: GetHistoryCountUseCase,
+    private val clearHistoryUseCase: ClearHistoryUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(DrawUiState())
@@ -120,6 +122,13 @@ class DrawViewModel(
         _uiState.update { it.copy(errorMessage = null) }
     }
 
+    fun clearHistory() {
+        viewModelScope.launch {
+            clearHistoryUseCase()
+            _uiState.update { it.copy(currentWinner = null) }
+        }
+    }
+
     class Factory(
         private val addParticipantUseCase: AddParticipantUseCase,
         private val deleteParticipantUseCase: DeleteParticipantUseCase,
@@ -127,7 +136,8 @@ class DrawViewModel(
         private val drawWinnerUseCase: DrawWinnerUseCase,
         private val getHistoryUseCase: GetHistoryUseCase,
         private val getParticipantCountUseCase: GetParticipantCountUseCase,
-        private val getHistoryCountUseCase: GetHistoryCountUseCase
+        private val getHistoryCountUseCase: GetHistoryCountUseCase,
+        private val clearHistoryUseCase: ClearHistoryUseCase
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -138,7 +148,8 @@ class DrawViewModel(
                 drawWinnerUseCase,
                 getHistoryUseCase,
                 getParticipantCountUseCase,
-                getHistoryCountUseCase
+                getHistoryCountUseCase,
+                clearHistoryUseCase
             ) as T
         }
     }

@@ -16,4 +16,7 @@ interface DrawHistoryDao {
 
     @Query("SELECT COUNT(*) FROM draw_history")
     suspend fun getCount(): Int
+
+    @Query("DELETE FROM draw_history")
+    suspend fun clearAll()
 }

@@ -11,6 +11,9 @@ interface ParticipantDao {
     @Query("SELECT * FROM participants ORDER BY registeredAt DESC")
     fun getAll(): Flow<List<ParticipantEntity>>
 
+    @Query("SELECT * FROM participants ORDER BY registeredAt DESC")
+    suspend fun getAllOnce(): List<ParticipantEntity>
+
     @Insert
     suspend fun insert(entity: ParticipantEntity): Long
 

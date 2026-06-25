@@ -32,7 +32,8 @@ fun AppNavigation(viewModel: DrawViewModel) {
                 onAddParticipant = { navController.navigate(Screen.Participants.route) },
                 onShowParticipants = { navController.navigate(Screen.Participants.route) },
                 onDraw = { viewModel.drawWinner() },
-                onShowHistory = { navController.navigate(Screen.History.route) }
+                onShowHistory = { navController.navigate(Screen.History.route) },
+                onClearHistory = { viewModel.clearHistory() }
             )
         }
 

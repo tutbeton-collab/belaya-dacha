@@ -15,6 +15,7 @@ import com.belayadacha.domain.usecase.GetHistoryCountUseCase
 import com.belayadacha.domain.usecase.GetHistoryUseCase
 import com.belayadacha.domain.usecase.GetParticipantCountUseCase
 import com.belayadacha.domain.usecase.GetParticipantsUseCase
+import com.belayadacha.domain.usecase.ClearHistoryUseCase
 import com.belayadacha.ui.DrawViewModel
 import com.belayadacha.ui.navigation.AppNavigation
 import com.belayadacha.ui.theme.BelayaDachaTheme
@@ -38,6 +39,7 @@ class MainActivity : ComponentActivity() {
         val getHistoryUseCase = GetHistoryUseCase(drawRepository)
         val getParticipantCountUseCase = GetParticipantCountUseCase(participantRepository)
         val getHistoryCountUseCase = GetHistoryCountUseCase(drawRepository)
+        val clearHistoryUseCase = ClearHistoryUseCase(drawRepository)
 
         val viewModel = ViewModelProvider(
             this,
@@ -48,7 +50,8 @@ class MainActivity : ComponentActivity() {
                 drawWinnerUseCase,
                 getHistoryUseCase,
                 getParticipantCountUseCase,
-                getHistoryCountUseCase
+                getHistoryCountUseCase,
+                clearHistoryUseCase
             )
         )[DrawViewModel::class.java]
 

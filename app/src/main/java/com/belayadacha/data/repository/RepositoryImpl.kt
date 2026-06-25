@@ -63,11 +63,10 @@ class DrawRepositoryImpl(
         if (participantCount == 0) {
             throw IllegalStateException("No participants")
         }
-        // Получаем всех участников для случайного выбора
-        val allParticipants = mutableListOf<ParticipantEntity>()
-        participantDao.getAll().collect { list ->
-            allParticipants.clear()
-            allParticipants.addAll(list)
+        // Получаем всех участников синхронно через suspend
+        val allParticipants = participantDao.getAllOnce()
+        if (allParticipants.isEmpty()) {
+            throw IllegalStateException("Participants list is empty after count check")
         }
 
         val winner = allParticipants.random()
@@ -83,6 +82,10 @@ class DrawRepositoryImpl(
 
     override suspend fun getHistoryCount(): Int {
         return dao.getCount()
+    }
+
+    override suspend fun clearHistory() {
+        dao.clearAll()
     }
 
     private fun DrawResultEntity.toDomain(winner: ParticipantEntity) = DrawResult(
